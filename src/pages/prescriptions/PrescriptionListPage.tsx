@@ -4,6 +4,7 @@ import { getAllPrescriptions } from '../../services/prescriptionService';
 import type { PrescriptionResponseDto } from '../../models/types';
 import { Search, Pill } from 'lucide-react';
 import { getPatientMrnSync } from '../../services/patientService';
+import './prescription.css';
 
 export default function PrescriptionListPage() {
   const [prescriptions, setPrescriptions] = useState<PrescriptionResponseDto[]>([]);
@@ -38,10 +39,10 @@ export default function PrescriptionListPage() {
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { cls: string; label: string }> = {
-      'ACTIVE': { cls: 'badge-success', label: 'Active' },
-      'COMPLETED': { cls: 'badge-info', label: 'Completed' },
+      'DRAFT': { cls: 'badge-neutral', label: 'Draft' },
+      'ISSUED': { cls: 'badge-success', label: 'Issued' },
+      'DISPENSED': { cls: 'badge-info', label: 'Dispensed' },
       'CANCELLED': { cls: 'badge-danger', label: 'Cancelled' },
-      'EXPIRED': { cls: 'badge-warning', label: 'Expired' },
     };
     const s = map[status] || { cls: 'badge-neutral', label: status };
     return <span className={`badge ${s.cls}`}><span className="badge-dot"></span>{s.label}</span>;
@@ -77,7 +78,7 @@ export default function PrescriptionListPage() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        {['ALL', 'ACTIVE', 'COMPLETED', 'CANCELLED', 'EXPIRED'].map(status => (
+        {['ALL', 'DRAFT', 'ISSUED', 'DISPENSED', 'CANCELLED'].map(status => (
           <button
             key={status}
             className={`filter-chip ${statusFilter === status ? 'active' : ''}`}

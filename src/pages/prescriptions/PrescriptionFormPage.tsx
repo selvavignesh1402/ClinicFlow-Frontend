@@ -1,9 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createPrescription } from '../../services/prescriptionService';
+import { createPrescription, searchMedications } from '../../services/prescriptionService';
 import { searchPatients, getPatientById } from '../../services/patientService';
 import type { PatientResponseDto } from '../../models/types';
+import { useAuth } from '../../contexts/AuthContext';
 import { ArrowLeft, Save, User, Plus } from 'lucide-react';
+import './prescription.css';
 
 interface MedicationItem {
   medId: number;
@@ -11,21 +13,6 @@ interface MedicationItem {
   code: string;
   formulation: string;
 }
-
-const DUMMY_MEDICATIONS: MedicationItem[] = [
-  { medId: 1, name: 'Paracetamol 500mg', code: 'PAR-500', formulation: 'Tablet' },
-  { medId: 2, name: 'Ibuprofen 400mg', code: 'IBU-400', formulation: 'Tablet' },
-  { medId: 3, name: 'Thiocolchicoside 4mg', code: 'THI-4', formulation: 'Capsule' },
-  { medId: 4, name: 'Metformin 1000mg', code: 'MET-1000', formulation: 'Tablet' },
-  { medId: 5, name: 'Glimepiride 1mg', code: 'GLI-1', formulation: 'Tablet' },
-  { medId: 6, name: 'Betamethasone Cream 0.1%', code: 'BET-0.1', formulation: 'Cream' },
-  { medId: 7, name: 'Cetirizine 10mg', code: 'CET-10', formulation: 'Tablet' },
-  { medId: 8, name: 'Amoxicillin 250mg', code: 'AMO-250', formulation: 'Capsule' },
-  { medId: 9, name: 'Amlodipine 5mg', code: 'AML-5', formulation: 'Tablet' },
-  { medId: 10, name: 'Atorvastatin 20mg', code: 'ATO-20', formulation: 'Tablet' },
-  { medId: 11, name: 'Pantoprazole 40mg', code: 'PAN-40', formulation: 'Tablet' },
-  { medId: 12, name: 'Azithromycin 500mg', code: 'AZI-500', formulation: 'Tablet' },
-];
 
 interface PrescriptionItem {
   id: string;
@@ -43,6 +30,7 @@ interface PrescriptionItem {
 export default function PrescriptionFormPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const navigationState = location.state as { encounterId?: number; patientId?: number } | null;
 
   const [loading, setLoading] = useState(false);
@@ -117,7 +105,7 @@ export default function PrescriptionFormPage() {
     }
   };
 
-  const handleMedSearch = (val: string) => {
+  const handleMedSearch = async (val: string) => {
     setMedSearchQuery(val);
     if (!val.trim()) {
       setMedSearchResults([]);
@@ -125,17 +113,25 @@ export default function PrescriptionFormPage() {
       setSelectedMedication(null);
       return;
     }
-    const filtered = DUMMY_MEDICATIONS.filter(
-      m => m.name.toLowerCase().includes(val.toLowerCase()) || m.code.toLowerCase().includes(val.toLowerCase())
-    );
-    setMedSearchResults(filtered);
-    setShowMedDropdown(true);
+    try {
+      const results = await searchMedications(val);
+      const mappedResults = results.map((m: any) => ({
+        medId: m.medId,
+        name: m.name,
+        code: m.code,
+        formulation: m.formulation
+      }));
+      setMedSearchResults(mappedResults);
+      setShowMedDropdown(true);
 
-    const exact = DUMMY_MEDICATIONS.find(m => m.name.toLowerCase() === val.trim().toLowerCase());
-    if (exact) {
-      setSelectedMedication(exact);
-    } else {
-      setSelectedMedication(null);
+      const exact = mappedResults.find((m: any) => m.name.toLowerCase() === val.trim().toLowerCase());
+      if (exact) {
+        setSelectedMedication(exact);
+      } else {
+        setSelectedMedication(null);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -217,7 +213,7 @@ export default function PrescriptionFormPage() {
         await createPrescription({
           encounterId: Number(encounterId) || 1,
           patientId: selectedPatient.patientId,
-          clinicianId: 2, // Dummy: current clinician
+          clinicianId: user?.userId || 2,
           medicationId: item.medicationId,
           dosage: item.dosage,
           frequency: item.frequency,
@@ -226,6 +222,7 @@ export default function PrescriptionFormPage() {
           repeats: item.repeats,
           route: item.route,
           notes: item.notes,
+          status: 'DRAFT',
         });
       }
 

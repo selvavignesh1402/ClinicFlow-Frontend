@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import './MainLayout.css';
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/dashboard': { title: 'Dashboard', subtitle: 'Welcome back' },

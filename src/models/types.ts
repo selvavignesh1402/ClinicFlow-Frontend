@@ -2,7 +2,7 @@
 
 export type AppointmentStatus = 'SCHEDULED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
 export type EncounterStatus = 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-export type PrescriptionStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED';
+export type PrescriptionStatus = 'CANCELLED' | 'ISSUED' | 'DISPENSED' | 'DRAFT';
 export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'CANCELLED';
 export type LabOrderStatus = 'ORDERED' | 'COLLECTED' | 'RESULTED' | 'CANCELLED';
 export type LabResultFlag = 'NORMAL' | 'HIGH' | 'LOW';

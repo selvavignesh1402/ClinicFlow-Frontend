@@ -4,6 +4,7 @@ import { getPrescriptionById, deletePrescription } from '../../services/prescrip
 import type { PrescriptionResponseDto } from '../../models/types';
 import { ArrowLeft, Trash2, Edit, Pill, User, Clock, FileText } from 'lucide-react';
 import { getPatientMrnSync } from '../../services/patientService';
+import './prescription.css';
 
 export default function PrescriptionDetailPage() {
   const { id } = useParams();

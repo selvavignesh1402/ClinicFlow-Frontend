@@ -4,6 +4,7 @@ import { getAllEncounters } from '../../services/encounterService';
 import type { EncounterResponseDto } from '../../models/types';
 import { Plus, Search, Stethoscope } from 'lucide-react';
 import { getPatientMrnSync } from '../../services/patientService';
+import './encounter.css';
 
 export default function EncounterListPage() {
   const [encounters, setEncounters] = useState<EncounterResponseDto[]>([]);

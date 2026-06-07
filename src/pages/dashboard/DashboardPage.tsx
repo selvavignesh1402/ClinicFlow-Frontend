@@ -1,5 +1,11 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { getAllPatients } from '../../services/patientService';
+import { getAllAppointments } from '../../services/appointmentService';
+import { getAllEncounters } from '../../services/encounterService';
+import { getAllPrescriptions } from '../../services/prescriptionService';
+import './DashboardPage.css';
 import {
   Users,
   CalendarDays,
@@ -16,11 +22,48 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const [patientCount, setPatientCount] = useState(0);
+  const [appointmentCount, setAppointmentCount] = useState(0);
+  const [activeEncounterCount, setActiveEncounterCount] = useState(0);
+  const [pendingRxCount, setPendingRxCount] = useState(0);
+  const [appointmentsList, setAppointmentsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        setLoading(true);
+        const [patients, appointments, encounters, prescriptions] = await Promise.all([
+          getAllPatients().catch(() => []),
+          getAllAppointments().catch(() => []),
+          getAllEncounters().catch(() => []),
+          getAllPrescriptions().catch(() => [])
+        ]);
+
+        setPatientCount(patients.length);
+        setAppointmentCount(appointments.length);
+        
+        const active = encounters.filter(e => e.status === 'IN_PROGRESS');
+        setActiveEncounterCount(active.length);
+
+        const pending = prescriptions.filter(p => p.status === 'DRAFT');
+        setPendingRxCount(pending.length);
+
+        setAppointmentsList(appointments);
+      } catch (err) {
+        console.error('Failed to load dashboard data', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboardData();
+  }, []);
+
   const stats = [
-    { label: 'Total Patients', value: '1,284', icon: <Users size={22} />, color: 'primary', trend: '+12%', trendDir: 'up' as const },
-    { label: 'Today\'s Appointments', value: '18', icon: <CalendarDays size={22} />, color: 'info', trend: '3 remaining', trendDir: 'up' as const },
-    { label: 'Active Encounters', value: '5', icon: <Stethoscope size={22} />, color: 'warning', trend: '2 urgent', trendDir: 'up' as const },
-    { label: 'Pending Prescriptions', value: '23', icon: <Pill size={22} />, color: 'success', trend: '+8 today', trendDir: 'up' as const },
+    { label: 'Total Patients', value: patientCount.toLocaleString(), icon: <Users size={22} />, color: 'primary', trend: '+12%', trendDir: 'up' as const },
+    { label: 'Total Appointments', value: appointmentCount.toString(), icon: <CalendarDays size={22} />, color: 'info', trend: 'Active Schedule', trendDir: 'up' as const },
+    { label: 'Active Encounters', value: activeEncounterCount.toString(), icon: <Stethoscope size={22} />, color: 'warning', trend: 'In Progress', trendDir: 'up' as const },
+    { label: 'Pending Prescriptions', value: pendingRxCount.toString(), icon: <Pill size={22} />, color: 'success', trend: 'Drafts', trendDir: 'up' as const },
   ];
 
   const recentActivities = [
@@ -32,13 +75,15 @@ export default function DashboardPage() {
     { text: 'Invoice #1042 marked as paid', time: '3 hours ago', color: 'var(--color-primary)' },
   ];
 
-  const todayAppointments = [
-    { patient: 'Arjun Mehta', time: '09:00 AM', type: 'Follow-Up', status: 'COMPLETED' },
-    { patient: 'Priya Sharma', time: '10:00 AM', type: 'New Visit', status: 'COMPLETED' },
-    { patient: 'Ravi Kumar', time: '11:15 AM', type: 'Follow-Up', status: 'CHECKED_IN' },
-    { patient: 'Fatima Begum', time: '02:00 PM', type: 'New Visit', status: 'SCHEDULED' },
-    { patient: 'Suresh Patel', time: '03:30 PM', type: 'Emergency', status: 'SCHEDULED' },
-  ];
+  const formatTime = (dateTimeStr: string) => {
+    if (!dateTimeStr) return '—';
+    try {
+      const date = new Date(dateTimeStr);
+      return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return dateTimeStr;
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { cls: string; label: string }> = {
@@ -50,6 +95,10 @@ export default function DashboardPage() {
     const s = map[status] || { cls: 'badge-neutral', label: status };
     return <span className={`badge ${s.cls}`}><span className="badge-dot"></span>{s.label}</span>;
   };
+
+  if (loading) {
+    return <div className="page-spinner"><div className="spinner"></div></div>;
+  }
 
   return (
     <div>
@@ -124,7 +173,7 @@ export default function DashboardPage() {
               <Clock size={18} style={{ color: 'var(--color-primary)' }} />
               Today's Appointments
             </h3>
-            <span className="badge badge-primary">{todayAppointments.length}</span>
+            <span className="badge badge-primary">{appointmentsList.length}</span>
           </div>
           <div className="data-table-wrapper" style={{ border: 'none', boxShadow: 'none' }}>
             <table className="data-table">
@@ -137,14 +186,22 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {todayAppointments.map((appt, i) => (
-                  <tr key={i}>
-                    <td className="cell-main">{appt.patient}</td>
-                    <td>{appt.time}</td>
-                    <td>{appt.type}</td>
-                    <td>{getStatusBadge(appt.status)}</td>
+                {appointmentsList.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '24px' }}>
+                      No appointments scheduled
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  appointmentsList.map((appt, i) => (
+                    <tr key={i}>
+                      <td className="cell-main">{appt.patientName}</td>
+                      <td>{formatTime(appt.startAt)}</td>
+                      <td>{appt.serviceType}</td>
+                      <td>{getStatusBadge(appt.status)}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

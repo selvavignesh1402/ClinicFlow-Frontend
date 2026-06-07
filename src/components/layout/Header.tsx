@@ -1,5 +1,6 @@
 import { Menu, Search, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import './Header.css';
 
 interface HeaderProps {
   onMenuClick: () => void;

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { login } from '../../services/authService';
 import type { UserRole } from '../../models/types';
+import './LoginPage.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

@@ -2,49 +2,82 @@ import type {
   AuthenticationRequest,
   RegisterRequest,
   AuthenticationResponse,
+  UserRole
 } from '../models/types';
 
-// ── Dummy credentials ──
-const DUMMY_USERS = [
-  { userId: 1, name: 'Dr. Admin', email: 'admin@clinic.com', password: 'admin123', role: 'ADMIN' as const },
-  { userId: 2, name: 'Dr. Sarah Mitchell', email: 'clinician@clinic.com', password: 'clinician123', role: 'CLINICIAN' as const },
-  { userId: 3, name: 'Jane Doe', email: 'patient@clinic.com', password: 'patient123', role: 'PATIENT' as const },
-  { userId: 4, name: 'Mark Johnson', email: 'reception@clinic.com', password: 'reception123', role: 'RECEPTION' as const },
-];
+const BASE_URL = 'http://localhost:8081';
+
+// Helper to decode JWT claims in client side
+function decodeJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (err) {
+    console.error('Failed to decode JWT token', err);
+    return null;
+  }
+}
 
 /**
- * TODO: Replace with actual API call
  * POST /api/v1/auth/authenticate
  */
-export async function login(request: AuthenticationRequest): Promise<AuthenticationResponse & { user: { userId: number; name: string; email: string; role: string } }> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
+export async function login(request: AuthenticationRequest): Promise<AuthenticationResponse & { user: { userId: number; name: string; email: string; role: UserRole } }> {
+  const response = await fetch(`${BASE_URL}/api/v1/auth/authenticate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
 
-  const user = DUMMY_USERS.find(u => u.email === request.email && u.password === request.password);
-  if (!user) {
-    throw new Error('Invalid email or password');
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Authentication failed. Please verify your credentials.');
+  }
+
+  const data: AuthenticationResponse = await response.json();
+  const decoded = decodeJwt(data.token);
+  
+  if (!decoded) {
+    throw new Error('Failed to resolve authenticated session claims.');
   }
 
   return {
-    token: `dummy-jwt-token-${user.userId}-${Date.now()}`,
-    message: 'Login successful',
-    user: { userId: user.userId, name: user.name, email: user.email, role: user.role },
+    token: data.token,
+    message: data.message || 'Login successful',
+    user: {
+      userId: decoded.userId,
+      name: decoded.name,
+      email: decoded.sub, // JWT Subject is email
+      role: decoded.role as UserRole,
+    },
   };
 }
 
 /**
- * TODO: Replace with actual API call
  * POST /api/v1/auth/register
  */
 export async function register(request: RegisterRequest): Promise<AuthenticationResponse> {
-  await new Promise(resolve => setTimeout(resolve, 800));
+  const response = await fetch(`${BASE_URL}/api/v1/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
 
-  if (DUMMY_USERS.some(u => u.email === request.email)) {
-    throw new Error('Email already registered');
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Registration failed.');
   }
 
-  return {
-    token: `dummy-jwt-token-new-${Date.now()}`,
-    message: 'Registration successful',
-  };
+  return response.json();
 }
