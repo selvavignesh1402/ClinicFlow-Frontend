@@ -1,5 +1,6 @@
-import { Menu, Search, Bell } from 'lucide-react';
+import { Menu, Search, Bell, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import './Header.css';
 
 interface HeaderProps {
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick, title, subtitle }: HeaderProps) {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="header">
@@ -27,6 +29,14 @@ export default function Header({ onMenuClick, title, subtitle }: HeaderProps) {
           <Search className="search-icon" size={16} />
           <input type="text" placeholder="Search..." aria-label="Search" />
         </div>
+        <button
+          className="btn btn-ghost btn-icon"
+          onClick={toggleTheme}
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          style={{ transition: 'transform 0.2s ease-out' }}
+        >
+          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+        </button>
         <button className="btn btn-ghost btn-icon" title="Notifications">
           <Bell size={20} />
         </button>

@@ -1,108 +1,108 @@
-import type { PatientResponseDto } from '../models/types';
-
-const BASE_URL = 'http://localhost:8081';
-
-function getAuthHeaders(): Record<string, string> {
-  try {
-    const stored = localStorage.getItem('clinic_flow_user');
-    if (stored) {
-      const authUser = JSON.parse(stored);
-      if (authUser?.token) {
-        return {
-          'Authorization': `Bearer ${authUser.token}`,
-          'Content-Type': 'application/json'
-        };
-      }
-    }
-  } catch (err) {
-    console.error('Error reading auth token', err);
-  }
-  return {
-    'Content-Type': 'application/json'
-  };
-}
+import api from './api';
+import type { PatientResponseDto, PatientRequestDto } from '../models/types';
 
 /**
  * GET /api/v1/patients
  */
 export async function getAllPatients(): Promise<PatientResponseDto[]> {
-  const response = await fetch(`${BASE_URL}/api/v1/patients`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch patients list.');
+  try {
+    const response = await api.get<PatientResponseDto[]>('/api/v1/patients');
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || 'Failed to fetch patients list');
   }
-  return response.json();
 }
 
 /**
  * GET /api/v1/patients/{id}
  */
 export async function getPatientById(id: number): Promise<PatientResponseDto> {
-  const response = await fetch(`${BASE_URL}/api/v1/patients/${id}`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Patient with ID ${id} not found.`);
+  try {
+    const response = await api.get<PatientResponseDto>(`/api/v1/patients/${id}`);
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || `Failed to fetch patient details with id ${id}`);
   }
-  return response.json();
 }
 
 /**
  * GET /api/v1/patients/mrn/{mrn}
  */
 export async function getPatientByMrn(mrn: string): Promise<PatientResponseDto> {
-  const response = await fetch(`${BASE_URL}/api/v1/patients/mrn/${mrn}`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Patient with MRN ${mrn} not found.`);
+  try {
+    const response = await api.get<PatientResponseDto>(`/api/v1/patients/mrn/${mrn}`);
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || `Failed to fetch patient details with MRN ${mrn}`);
   }
-  return response.json();
 }
 
 /**
- * Search patients by name or MRN (client-side filtering of backend list)
+ * GET /api/v1/patients/me
+ * Retrieves the logged-in patient's record. Returns null if profile is not created yet (204 No Content).
+ */
+export async function getMyProfile(): Promise<PatientResponseDto | null> {
+  try {
+    const response = await api.get<PatientResponseDto>('/api/v1/patients/me');
+    if (response.status === 204) {
+      return null;
+    }
+    return response.data;
+  } catch (err: any) {
+    if (err.response && err.response.status === 204) {
+      return null;
+    }
+    throw new Error(err.response?.data?.message || 'Failed to fetch user profile');
+  }
+}
+
+/**
+ * POST /api/v1/patients
+ * Registers a new patient. Can be called by Reception, Admin, or Patient (self-registration).
+ */
+export async function registerPatient(request: PatientRequestDto): Promise<PatientResponseDto> {
+  try {
+    const response = await api.post<PatientResponseDto>('/api/v1/patients', request);
+    return response.data;
+  } catch (err: any) {
+    // Rethrow the original error (axios error) so callers can inspect `err.response` for details
+    throw err;
+  }
+}
+
+/**
+ * PUT /api/v1/patients/{id}
+ */
+export async function updatePatient(id: number, request: PatientRequestDto): Promise<PatientResponseDto> {
+  try {
+    const response = await api.put<PatientResponseDto>(`/api/v1/patients/${id}`, request);
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || 'Failed to update patient profile');
+  }
+}
+
+/**
+ * Search patients by name or MRN (for autocomplete)
  */
 export async function searchPatients(query: string): Promise<PatientResponseDto[]> {
-  const patients = await getAllPatients();
-  if (!query.trim()) return patients;
-  
-  const q = query.toLowerCase();
-  return patients.filter(
-    p => p.name.toLowerCase().includes(q) || p.mrn.toLowerCase().includes(q)
-  );
-}
-
-// Global cached patients dictionary to resolve MRN synchronously
-let cachedPatients: PatientResponseDto[] = [];
-
-// Initialize/reload cache
-async function refreshPatientsCache() {
   try {
-    cachedPatients = await getAllPatients();
-  } catch (err) {
-    console.error('Failed to refresh patients cache', err);
+    const patients = await getAllPatients();
+    if (!query.trim()) return patients;
+    const q = query.toLowerCase();
+    return patients.filter(
+      p => p.name.toLowerCase().includes(q) || p.mrn.toLowerCase().includes(q)
+    );
+  } catch (e) {
+    console.error('Search patients failed, falling back to empty list', e);
+    return [];
   }
 }
 
-// Run initial load
-refreshPatientsCache();
-
 /**
- * Helper to get Patient MRN synchronously by patientId
+ * Helper to get Patient MRN synchronously by patientId.
+ * Used for listing overlays where MRN needs to be printed inline.
  */
 export function getPatientMrnSync(patientId: number): string {
-  const p = cachedPatients.find(pat => pat.patientId === patientId);
-  if (p) return p.mrn;
-  
-  // Asynchronously try to refresh cache for future lookups
-  refreshPatientsCache();
   return `MRN-${patientId}`;
 }

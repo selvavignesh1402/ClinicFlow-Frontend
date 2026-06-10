@@ -19,6 +19,24 @@ import PrescriptionListPage from '../pages/prescriptions/PrescriptionListPage';
 import PrescriptionDetailPage from '../pages/prescriptions/PrescriptionDetailPage';
 import PrescriptionFormPage from '../pages/prescriptions/PrescriptionFormPage';
 
+// Appointments
+import AppointmentListPage from '../pages/appointments/AppointmentListPage';
+import AppointmentFormPage from '../pages/appointments/AppointmentFormPage';
+
+// Patients
+import PatientListPage from '../pages/patients/PatientListPage';
+
+// Lab Module
+import LabDashboardPage from '../pages/lab/LabDashboradPage';
+import LabOrderFormPage from '../pages/lab/LabOrderFormPage';
+import LabOrderDetailPage from '../pages/lab/LabOrderDetailPage';
+
+// Admin
+import AdminUserManagementPage from '../pages/admin/AdminUserManagementPage';
+
+// Profile
+import ProfilePage from '../pages/profile/ProfilePage';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -48,16 +66,25 @@ export default function AppRouter() {
         <Route path="/prescriptions/:id" element={<PrescriptionDetailPage />} />
         <Route path="/prescriptions/:id/edit" element={<PrescriptionFormPage />} />
 
-        {/* Placeholder routes for future modules */}
-        <Route path="/patients" element={<ComingSoon title="Patients" />} />
-        <Route path="/appointments" element={<ComingSoon title="Appointments" />} />
-        <Route path="/lab" element={<ComingSoon title="Lab Orders" />} />
+        {/* Patients Registry */}
+        <Route path="/patients" element={<PatientListPage />} />
+        
+        {/* Appointments */}
+        <Route path="/appointments" element={<AppointmentListPage />} />
+        <Route path="/appointments/new" element={<AppointmentFormPage />} />
+
+        {/* Lab Module */}
+        <Route path="/lab" element={<LabDashboardPage />} />
+        <Route path="/lab/new" element={<LabOrderFormPage />} />
+        <Route path="/lab/:id" element={<LabOrderDetailPage />} />
+
         <Route path="/pharmacy" element={<ComingSoon title="Pharmacy" />} />
         <Route path="/inventory" element={<ComingSoon title="Inventory" />} />
         <Route path="/invoices" element={<ComingSoon title="Invoices" />} />
         <Route path="/payments" element={<ComingSoon title="Payments" />} />
         <Route path="/reports" element={<ComingSoon title="Reports" />} />
-        <Route path="/admin/users" element={<ComingSoon title="User Management" />} />
+        <Route path="/admin/users" element={<AdminUserManagementPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Route>
 
       {/* Redirects */}

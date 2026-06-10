@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Sidebar.css';
 import {
@@ -77,6 +77,7 @@ const navSections: { title: string; items: NavItem[] }[] = [
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const filteredSections = navSections
     .map(section => ({
@@ -121,13 +122,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
         </nav>
 
-        <div className="sidebar-user">
+        <div className="sidebar-user" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} title="View Profile">
           <div className="sidebar-user-avatar">{initials}</div>
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name">{user?.name}</div>
+          <div className="sidebar-user-info" style={{ overflow: 'hidden' }}>
+            <div className="sidebar-user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
             <div className="sidebar-user-role">{user?.role.replace('_', ' ').toLowerCase()}</div>
           </div>
-          <button className="sidebar-logout-btn" onClick={logout} title="Logout">
+          <button className="sidebar-logout-btn" onClick={(e) => { e.stopPropagation(); logout(); }} title="Logout">
             <LogOut size={18} />
           </button>
         </div>

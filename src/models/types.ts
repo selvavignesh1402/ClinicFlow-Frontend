@@ -2,10 +2,10 @@
 
 export type AppointmentStatus = 'SCHEDULED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
 export type EncounterStatus = 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-export type PrescriptionStatus = 'CANCELLED' | 'ISSUED' | 'DISPENSED' | 'DRAFT';
+export type PrescriptionStatus = 'DRAFT' | 'ISSUED' | 'DISPENSED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED';
 export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'CANCELLED';
-export type LabOrderStatus = 'ORDERED' | 'COLLECTED' | 'RESULTED' | 'CANCELLED';
-export type LabResultFlag = 'NORMAL' | 'HIGH' | 'LOW';
+export type LabOrderStatus = 'ORDERED' | 'COLLECTED' | 'RESULTS_REPORTED' | 'CRITICAL_REPORTED' | 'CANCELLED';
+export type LabResultFlag = 'NORMAL' | 'HIGH' | 'LOW' | 'CRITICAL';
 export type InventoryStatus = 'AVAILABLE' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 export type MedicationStatus = 'ACTIVE' | 'INACTIVE';
 export type DispenseStatus = 'DISPENSED' | 'RETURNED';
@@ -50,6 +50,24 @@ export interface UserResponseDto {
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminCreateUserRequestDto {
+  name: string;
+  email: string;
+  password?: string;
+  phone: string;
+  role: string;
+  status?: string;
+}
+
+export interface AdminUpdateUserRequestDto {
+  name: string;
+  email: string;
+  password?: string;
+  phone: string;
+  role: string;
+  status: string;
 }
 
 // ── Patient ──
@@ -246,7 +264,9 @@ export interface LabResultSummaryDto {
   resultId: number;
   testCode: string;
   value: string;
+  units: string;
   flag: LabResultFlag;
+  reportedAt: string;
 }
 
 export interface LabResultResponseDto {
@@ -317,4 +337,5 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   token: string;
+  phone?: string;
 }
