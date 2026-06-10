@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   getEncounterById,
   completeEncounter,
@@ -38,6 +39,7 @@ import './encounter.css';
 type TabType = 'Overview' | 'SOAP Notes' | 'Diagnosis' | 'Orders' | 'Prescriptions' | 'Timeline';
 
 export default function EncounterDetailPage() {
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [encounter, setEncounter] = useState<EncounterResponseDto | null>(null);
@@ -365,30 +367,32 @@ export default function EncounterDetailPage() {
       </div>
 
       {/* Action Buttons Row (Evenly Spaced Layout Grid) */}
-      <div className="detail-actions-row">
-        {encounter.status === 'IN_PROGRESS' && (
-          <>
-            <button className="btn btn-secondary" onClick={() => navigate(`/encounters/${encounter.encounterId}/edit`)}>
-              <Edit size={16} /> Edit
-            </button>
-            <button className="btn btn-secondary" onClick={() => navigate('/prescriptions/new', { state: { encounterId: encounter.encounterId, patientId: encounter.patientId } })}>
-              <Pill size={16} /> Add Prescription
-            </button>
-            <button className="btn btn-secondary" onClick={() => setActiveTab('Orders')} title="Order Lab investigations">
-              <ClipboardList size={16} /> Order Lab
-            </button>
-            <button className="btn btn-secondary" onClick={() => toast.success('Encounter progress saved as draft.')}>
-              <Save size={16} /> Save Draft
-            </button>
-            <button className="btn btn-primary" style={{ background: '#10b981', borderColor: '#10b981' }} onClick={handleComplete} disabled={actionLoading}>
-              <CheckCircle size={16} /> {actionLoading ? 'Signing...' : 'Sign Encounter'}
-            </button>
-          </>
-        )}
-        <button className="btn btn-danger" onClick={handleDelete} disabled={actionLoading}>
-          <Trash2 size={16} /> Delete
-        </button>
-      </div>
+      {user?.role === 'CLINICIAN' && (
+        <div className="detail-actions-row">
+          {encounter.status === 'IN_PROGRESS' && (
+            <>
+              <button className="btn btn-secondary" onClick={() => navigate(`/encounters/${encounter.encounterId}/edit`)}>
+                <Edit size={16} /> Edit
+              </button>
+              <button className="btn btn-secondary" onClick={() => navigate('/prescriptions/new', { state: { encounterId: encounter.encounterId, patientId: encounter.patientId } })}>
+                <Pill size={16} /> Add Prescription
+              </button>
+              <button className="btn btn-secondary" onClick={() => setActiveTab('Orders')} title="Order Lab investigations">
+                <ClipboardList size={16} /> Order Lab
+              </button>
+              <button className="btn btn-secondary" onClick={() => toast.success('Encounter progress saved as draft.')}>
+                <Save size={16} /> Save Draft
+              </button>
+              <button className="btn btn-primary" style={{ background: '#10b981', borderColor: '#10b981' }} onClick={handleComplete} disabled={actionLoading}>
+                <CheckCircle size={16} /> {actionLoading ? 'Signing...' : 'Sign Encounter'}
+              </button>
+            </>
+          )}
+          <button className="btn btn-danger" onClick={handleDelete} disabled={actionLoading}>
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
+      )}
 
       {/* Patient Demographic Banner Card */}
       <div className="demographics-banner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
@@ -647,7 +651,7 @@ export default function EncounterDetailPage() {
               <div className="soap-field-card">
                 <div className="soap-field-header">
                   <span className="soap-field-title" style={{ color: '#2563eb' }}>S — Subjective</span>
-                  {editingSoap !== 'subjective' && encounter.status === 'IN_PROGRESS' && (
+                  {editingSoap !== 'subjective' && encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingSoap('subjective')}>
                       <Edit size={14} /> Edit
                     </button>
@@ -678,7 +682,7 @@ export default function EncounterDetailPage() {
               <div className="soap-field-card">
                 <div className="soap-field-header">
                   <span className="soap-field-title" style={{ color: '#2563eb' }}>O — Objective</span>
-                  {editingSoap !== 'objective' && encounter.status === 'IN_PROGRESS' && (
+                  {editingSoap !== 'objective' && encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingSoap('objective')}>
                       <Edit size={14} /> Edit
                     </button>
@@ -709,7 +713,7 @@ export default function EncounterDetailPage() {
               <div className="soap-field-card">
                 <div className="soap-field-header">
                   <span className="soap-field-title" style={{ color: '#d97706' }}>A — Assessment</span>
-                  {editingSoap !== 'assessment' && encounter.status === 'IN_PROGRESS' && (
+                  {editingSoap !== 'assessment' && encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingSoap('assessment')}>
                       <Edit size={14} /> Edit
                     </button>
@@ -740,7 +744,7 @@ export default function EncounterDetailPage() {
               <div className="soap-field-card">
                 <div className="soap-field-header">
                   <span className="soap-field-title" style={{ color: '#10b981' }}>P — Plan</span>
-                  {editingSoap !== 'plan' && encounter.status === 'IN_PROGRESS' && (
+                  {editingSoap !== 'plan' && encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingSoap('plan')}>
                       <Edit size={14} /> Edit
                     </button>
@@ -775,7 +779,7 @@ export default function EncounterDetailPage() {
                 <h3 style={{ margin: 0 }}>Encounter Diagnoses</h3>
               </div>
               <div className="section-card-body">
-                {encounter.status === 'IN_PROGRESS' && (
+                {encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                   <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                     <input
                       type="text"
@@ -825,7 +829,7 @@ export default function EncounterDetailPage() {
             <div className="section-card">
               <div className="section-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3 style={{ margin: 0 }}>Lab Orders</h3>
-                {encounter.status === 'IN_PROGRESS' && ordersList.length > 0 && (
+                {encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && ordersList.length > 0 && (
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"
@@ -848,7 +852,7 @@ export default function EncounterDetailPage() {
                     <h4>No lab orders yet</h4>
                     <p style={{ color: 'var(--color-text-secondary)' }}>Order investigations for this encounter</p>
                     
-                    {encounter.status === 'IN_PROGRESS' && (
+                    {encounter.status === 'IN_PROGRESS' && user?.role === 'CLINICIAN' && (
                       <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
                         <input
                           type="text"

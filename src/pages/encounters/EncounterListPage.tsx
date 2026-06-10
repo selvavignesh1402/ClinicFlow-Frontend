@@ -4,9 +4,11 @@ import { getAllEncounters } from '../../services/encounterService';
 import type { EncounterResponseDto } from '../../models/types';
 import { Plus, Search, Stethoscope } from 'lucide-react';
 import { getPatientMrnSync } from '../../services/patientService';
+import { useAuth } from '../../contexts/AuthContext';
 import './encounter.css';
 
 export default function EncounterListPage() {
+  const { user } = useAuth();
   const [encounters, setEncounters] = useState<EncounterResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -70,12 +72,14 @@ export default function EncounterListPage() {
           <h1>Encounters</h1>
           <p>Manage clinical encounters and patient visits</p>
         </div>
-        <div className="page-header-actions">
-          <button className="btn btn-primary" onClick={() => navigate('/encounters/new')}>
-            <Plus size={18} />
-            New Encounter
-          </button>
-        </div>
+        {user?.role === 'CLINICIAN' && (
+          <div className="page-header-actions">
+            <button className="btn btn-primary" onClick={() => navigate('/encounters/new')}>
+              <Plus size={18} />
+              New Encounter
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -106,9 +110,11 @@ export default function EncounterListPage() {
           <div className="empty-state-icon"><Stethoscope size={28} /></div>
           <h3>No encounters found</h3>
           <p>Try adjusting your search or create a new encounter.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/encounters/new')}>
-            <Plus size={16} /> New Encounter
-          </button>
+          {user?.role === 'CLINICIAN' && (
+            <button className="btn btn-primary" onClick={() => navigate('/encounters/new')}>
+              <Plus size={16} /> New Encounter
+            </button>
+          )}
         </div>
       ) : (
         <div className="data-table-wrapper">
