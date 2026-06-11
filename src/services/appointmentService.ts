@@ -7,13 +7,6 @@ export interface Clinician {
   department: string;
 }
 
-export const DEFAULT_CLINICIANS: Clinician[] = [
-  { userId: 1, name: 'Dr. Asha Mehta', department: 'General Medicine' },
-  { userId: 2, name: 'Dr. Sarah Mitchell', department: 'Pediatrics' },
-  { userId: 3, name: 'Dr. James Carter', department: 'Cardiology' },
-  { userId: 4, name: 'Dr. Emily Watson', department: 'Dermatology' }
-];
-
 export async function getAllAppointments(): Promise<AppointmentResponseDto[]> {
   try {
     const response = await api.get<AppointmentResponseDto[]>('/api/v1/appointments');
@@ -69,22 +62,18 @@ export async function cancelAppointment(apptId: number): Promise<AppointmentResp
 }
 
 /**
- * Gets clinicians list. Falls back to static seed data if current role doesn't have Admin privileges
+ * Gets clinicians list.
  */
 export async function getClinicians(): Promise<Clinician[]> {
   try {
-    const response = await api.get<UserResponseDto[]>('/api/v1/admin/users');
-    const clinicians = response.data
-      .filter((u: UserResponseDto) => u.role === 'CLINICIAN' && u.status === 'ACTIVE')
-      .map((u: UserResponseDto) => ({
-        userId: u.userId,
-        name: u.name,
-        department: u.name.includes('Mehta') ? 'General Medicine' : 'Pediatrics'
-      }));
-    return clinicians.length > 0 ? clinicians : DEFAULT_CLINICIANS;
-  } catch (e) {
-    console.warn('Lacks permission to list users, falling back to default clinicians', e);
-    return DEFAULT_CLINICIANS;
+    const response = await api.get<UserResponseDto[]>('/api/v1/appointments/clinicians');
+    return response.data.map((u: UserResponseDto) => ({
+      userId: u.userId,
+      name: u.name,
+      department: u.name.includes('Mehta') ? 'General Medicine' : 'Pediatrics'
+    }));
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || 'Failed to fetch clinicians list');
   }
 }
 
