@@ -1,0 +1,227 @@
+/* Itemized line items layout */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr 1.2fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.item-row-total {
+  font-weight: 700;
+  color: var(--color-text);
+  padding-bottom: 12px;
+  font-size: 14px;
+}
+
+.invoice-summary-box {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  margin-left: auto;
+  max-width: 320px;
+}
+
+.invoice-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.invoice-summary-row.total {
+  font-weight: 800;
+  color: var(--color-text);
+  font-size: 16px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+/* Receipt Format / Printable Details */
+.receipt {
+  padding: 10px;
+  font-family: inherit;
+}
+
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-text);
+  padding-bottom: 16px;
+}
+
+.receipt-logo {
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--color-primary);
+}
+
+.receipt-meta {
+  text-align: right;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.receipt-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.receipt-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  background: var(--color-bg);
+  padding: 14px;
+  border-radius: var(--radius-md);
+}
+
+.receipt-info-block span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.receipt-info-block strong {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.receipt-table th {
+  background: var(--color-text);
+  color: white;
+  font-size: 11px;
+  padding: 8px 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.receipt-table td {
+  padding: 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.receipt-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.receipt-summary-row {
+  display: grid;
+  grid-template-columns: 140px 100px;
+  text-align: right;
+}
+
+.receipt-summary-row.total {
+  font-size: 16px;
+  font-weight: 800;
+  border-top: 1.5px solid var(--color-text);
+  padding-top: 8px;
+  margin-top: 4px;
+  color: var(--color-text);
+}
+
+.receipt-footer {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  margin-top: 40px;
+  border-top: 1px dashed var(--color-border);
+  padding-top: 16px;
+}
+
+/* Print Overrides */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .modal-overlay,
+  .modal-overlay * {
+    visibility: visible;
+  }
+  .modal-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    backdrop-filter: none;
+    display: block;
+  }
+  .modal,
+  .modal-content {
+    box-shadow: none;
+    border: 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 100%;
+    display: block;
+    animation: none;
+    overflow: visible;
+  }
+  .modal-header,
+  .modal-close,
+  .modal-actions,
+  button {
+    display: none !important;
+  }
+  .modal-body {
+    padding: 0;
+    overflow: visible;
+  }
+  .receipt {
+    padding: 0;
+  }
+  .receipt-header {
+    border-bottom-color: black;
+  }
+  .receipt-info-grid {
+    background: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .receipt-table th {
+    background: black !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .receipt-summary-row.total {
+    border-top-color: black;
+  }
+}

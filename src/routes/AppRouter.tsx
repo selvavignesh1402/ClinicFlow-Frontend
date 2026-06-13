@@ -37,6 +37,15 @@ import AdminUserManagementPage from '../pages/admin/AdminUserManagementPage';
 // Profile
 import ProfilePage from '../pages/profile/ProfilePage';
 
+// Finance
+import InvoicePage from '../pages/invoices/InvoicePage';
+import PaymentPage from '../pages/payments/PaymentPage';
+import ReportPage from '../pages/reports/ReportPage';
+
+// Pharmacy & Inventory
+import PharmacyPage from '../pages/pharmacy/PharmacyPage';
+import InventoryPage from '../pages/inventory/InventoryPage';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -78,11 +87,11 @@ export default function AppRouter() {
         <Route path="/lab/new" element={<LabOrderFormPage />} />
         <Route path="/lab/:id" element={<LabOrderDetailPage />} />
 
-        <Route path="/pharmacy" element={<ComingSoon title="Pharmacy" />} />
-        <Route path="/inventory" element={<ComingSoon title="Inventory" />} />
-        <Route path="/invoices" element={<ComingSoon title="Invoices" />} />
-        <Route path="/payments" element={<ComingSoon title="Payments" />} />
-        <Route path="/reports" element={<ComingSoon title="Reports" />} />
+        <Route path="/pharmacy" element={<PharmacyPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/invoices" element={<InvoicePage />} />
+        <Route path="/payments" element={<PaymentPage />} />
+        <Route path="/reports" element={<ReportPage />} />
         <Route path="/admin/users" element={<AdminUserManagementPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
