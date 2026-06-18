@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import ProtectedRoute from '../components/guards/ProtectedRoute';
 
@@ -62,38 +62,75 @@ export default function AppRouter() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Encounters */}
-        <Route path="/encounters" element={<EncounterListPage />} />
-        <Route path="/encounters/new" element={<EncounterFormPage />} />
-        <Route path="/encounters/:id" element={<EncounterDetailPage />} />
-        <Route path="/encounters/:id/edit" element={<EncounterFormPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN', 'PATIENT']}><Outlet /></ProtectedRoute>}>
+          <Route path="/encounters" element={<EncounterListPage />} />
+          <Route path="/encounters/:id" element={<EncounterDetailPage />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/encounters/new" element={<EncounterFormPage />} />
+          <Route path="/encounters/:id/edit" element={<EncounterFormPage />} />
+        </Route>
 
         {/* Prescriptions */}
-        <Route path="/prescriptions" element={<PrescriptionListPage />} />
-        <Route path="/prescriptions/new" element={<PrescriptionFormPage />} />
-        <Route path="/prescriptions/:id" element={<PrescriptionDetailPage />} />
-        <Route path="/prescriptions/:id/edit" element={<PrescriptionFormPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN', 'PATIENT']}><Outlet /></ProtectedRoute>}>
+          <Route path="/prescriptions" element={<PrescriptionListPage />} />
+          <Route path="/prescriptions/:id" element={<PrescriptionDetailPage />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/prescriptions/new" element={<PrescriptionFormPage />} />
+          <Route path="/prescriptions/:id/edit" element={<PrescriptionFormPage />} />
+        </Route>
 
         {/* Patients Registry */}
-        <Route path="/patients" element={<PatientListPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN', 'RECEPTION', 'CLINIC_MANAGER']}><Outlet /></ProtectedRoute>}>
+          <Route path="/patients" element={<PatientListPage />} />
+        </Route>
         
         {/* Appointments */}
-        <Route path="/appointments" element={<AppointmentListPage />} />
-        <Route path="/appointments/new" element={<AppointmentFormPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN', 'RECEPTION', 'CLINIC_MANAGER', 'PATIENT']}><Outlet /></ProtectedRoute>}>
+          <Route path="/appointments" element={<AppointmentListPage />} />
+          <Route path="/appointments/new" element={<AppointmentFormPage />} />
+        </Route>
 
         {/* Lab Module */}
-        <Route path="/lab" element={<LabDashboardPage />} />
-        <Route path="/lab/new" element={<LabOrderFormPage />} />
-        <Route path="/lab/:id" element={<LabOrderDetailPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINICIAN', 'LAB_TECHNICIAN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/lab" element={<LabDashboardPage />} />
+          <Route path="/lab/new" element={<LabOrderFormPage />} />
+          <Route path="/lab/:id" element={<LabOrderDetailPage />} />
+        </Route>
 
-        <Route path="/pharmacy" element={<PharmacyPage />} />
-        <Route path="/inventory" element={<InventoryPage />} />
-        <Route path="/invoices" element={<InvoicePage />} />
-        <Route path="/payments" element={<PaymentPage />} />
-        <Route path="/reports" element={<ReportPage />} />
-        <Route path="/admin/users" element={<AdminUserManagementPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        {/* Pharmacy & Dispensing */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'PHARMACIST', 'CLINICIAN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/pharmacy" element={<PharmacyPage />} />
+        </Route>
+
+        {/* Inventory */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'PHARMACIST', 'CLINIC_MANAGER']}><Outlet /></ProtectedRoute>}>
+          <Route path="/inventory" element={<InventoryPage />} />
+        </Route>
+
+        {/* Invoices */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'FINANCE_OFFICER', 'CLINIC_MANAGER', 'RECEPTION']}><Outlet /></ProtectedRoute>}>
+          <Route path="/invoices" element={<InvoicePage />} />
+        </Route>
+
+        {/* Payments */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'FINANCE_OFFICER', 'CLINIC_MANAGER']}><Outlet /></ProtectedRoute>}>
+          <Route path="/payments" element={<PaymentPage />} />
+        </Route>
+
+        {/* Reports */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CLINIC_MANAGER', 'FINANCE_OFFICER']}><Outlet /></ProtectedRoute>}>
+          <Route path="/reports" element={<ReportPage />} />
+        </Route>
+
+        {/* Admin User Management */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/admin/users" element={<AdminUserManagementPage />} />
+        </Route>
       </Route>
 
       {/* Redirects */}
@@ -103,6 +140,7 @@ export default function AppRouter() {
   );
 }
 
+/*
 // Temporary placeholder for future modules
 function ComingSoon({ title }: { title: string }) {
   return (
@@ -113,3 +151,4 @@ function ComingSoon({ title }: { title: string }) {
     </div>
   );
 }
+*/
