@@ -1,0 +1,724 @@
+
+<!DOCTYPE html>
+<html>
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#f5f7fb;
+    color:#1e293b;
+    padding:30px;
+    line-height:1.7;
+}
+
+/* Navigation */
+.nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:30px;
+    padding-bottom:20px;
+    border-bottom:1px solid #dbe2ea;
+}
+
+.nav button{
+    border:none;
+    background:white;
+    color:#475569;
+    padding:10px 18px;
+    border-radius:30px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+    transition:.3s;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.nav button:hover{
+    background:#2563eb;
+    color:white;
+}
+
+.nav button.active{
+    background:#2563eb;
+    color:white;
+}
+
+/* Sections */
+.section{
+    display:none;
+}
+
+.section.visible{
+    display:block;
+}
+
+/* Headings */
+h2{
+    font-size:28px;
+    margin-bottom:20px;
+    color:#0f172a;
+}
+
+h3{
+    font-size:20px;
+    margin:25px 0 15px;
+    color:#1e293b;
+}
+
+p{
+    color:#475569;
+    margin-bottom:12px;
+}
+
+/* Cards */
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:18px;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.05);
+}
+
+.card-title{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:12px;
+    color:#0f172a;
+}
+
+/* State rows */
+.state-row{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+    align-items:flex-start;
+}
+
+.state-name{
+    background:#eff6ff;
+    color:#2563eb;
+    padding:4px 10px;
+    border-radius:8px;
+    font-family:Consolas, monospace;
+    font-size:13px;
+}
+
+.state-purpose{
+    flex:1;
+    color:#334155;
+}
+
+.state-type{
+    color:#64748b;
+}
+
+/* Tags */
+.tag{
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.tag-blue{
+    background:#dbeafe;
+    color:#2563eb;
+}
+
+.tag-green{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.tag-amber{
+    background:#fef3c7;
+    color:#d97706;
+}
+
+.tag-red{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.tag-gray{
+    background:#e2e8f0;
+    color:#475569;
+}
+
+/* Flow boxes */
+.flow-box{
+    background:white;
+    border-radius:15px;
+    padding:16px 20px;
+    margin:12px 0;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+}
+
+.flow-box.blue{
+    border-left:5px solid #2563eb;
+}
+
+.flow-box.green{
+    border-left:5px solid #16a34a;
+}
+
+.flow-box.amber{
+    border-left:5px solid #f59e0b;
+}
+
+.flow-box.red{
+    border-left:5px solid #dc2626;
+}
+
+.flow-box.gray{
+    border-left:5px solid #64748b;
+}
+
+.arrow{
+    text-align:center;
+    font-size:25px;
+    color:#94a3b8;
+    margin:10px 0;
+}
+
+/* Code blocks */
+code{
+    background:#f1f5f9;
+    color:#2563eb;
+    padding:3px 7px;
+    border-radius:6px;
+    font-family:Consolas, monospace;
+}
+
+/* Labels */
+.group-label{
+    margin:25px 0 15px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:#64748b;
+    font-size:12px;
+    font-weight:600;
+}
+
+/* Mobile */
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .state-row{
+        flex-direction:column;
+    }
+
+    h2{
+        font-size:22px;
+    }
+
+    h3{
+        font-size:18px;
+    }
+}
+</style>
+
+<div class="nav">
+  <button class="active" onclick="show('imports')">1. Imports</button>
+  <button onclick="show('states')">2. State declarations</button>
+  <button onclick="show('useeffect')">3. useEffect & data load</button>
+  <button onclick="show('helpers')">4. Helper functions</button>
+  <button onclick="show('buttons')">5. Button → Service flows</button>
+  <button onclick="show('tabs')">6. Tabs & JSX render</button>
+  <button onclick="show('modals')">7. Modals</button>
+  <button onclick="show('files')">8. How util files are used</button>
+</div>
+
+<!-- SECTION 1: IMPORTS -->
+<div id="imports" class="section visible">
+<h2>Section 1 — Imports explained</h2>
+<p>Every import at the top of <code>EncounterDetailPage.tsx</code> has a specific job. Here's every one of them.</p>
+
+<div class="group-label">React core hooks</div>
+<div class="card">
+  <div class="state-row">
+    <span class="state-name">useState</span>
+    <span class="state-purpose">Declares state variables like <code>encounter</code>, <code>loading</code>, <code>vitalsTemp</code> etc. Every piece of data that drives the UI is held in a <code>useState</code>.</span>
+  </div>
+  <div class="state-row">
+    <span class="state-name">useEffect</span>
+    <span class="state-purpose">Runs <code>loadEncounterDetails()</code> once when the page mounts (and again if the URL <code>id</code> param changes).</span>
+  </div>
+</div>
+
+<div class="group-label">React Router hooks</div>
+<div class="card">
+  <div class="state-row">
+    <span class="state-name">useParams</span>
+    <span class="state-purpose">Reads <code>:id</code> from the URL — e.g. <code>/encounters/42</code> → <code>id = "42"</code>. Used everywhere as <code>Number(id)</code>.</span>
+  </div>
+  <div class="state-row">
+    <span class="state-name">useNavigate</span>
+    <span class="state-purpose">Used to redirect the user — e.g. after delete → <code>navigate('/encounters')</code>, or when clicking Edit → <code>navigate('/encounters/42/edit')</code>.</span>
+  </div>
+  <div class="state-row">
+    <span class="state-name">useSearchParams</span>
+    <span class="state-purpose">Imported but not visibly used in this file — likely a leftover or planned feature.</span>
+  </div>
+</div>
+
+<div class="group-label">Auth context</div>
+<div class="card">
+  <div class="state-row">
+    <span class="state-name">useAuth</span>
+    <span class="state-purpose">Gives <code>user</code> object with <code>user.role</code>. Used to conditionally show action buttons — only <code>CLINICIAN</code> sees Edit, Sign, Delete etc.</span>
+  </div>
+</div>
+
+<div class="group-label">Service functions (API callers)</div>
+<div class="card">
+  <div class="state-row"><span class="state-name">getEncounterById</span><span class="state-purpose">From <code>encounterService.ts</code> — GET /api/v1/clinician/encounters/{id}</span></div>
+  <div class="state-row"><span class="state-name">completeEncounter</span><span class="state-purpose">From <code>encounterService.ts</code> — PATCH /api/v1/clinician/encounters/status/{id}</span></div>
+  <div class="state-row"><span class="state-name">deleteEncounter</span><span class="state-purpose">From <code>encounterService.ts</code> — DELETE /api/v1/clinician/encounters/{id}</span></div>
+  <div class="state-row"><span class="state-name">updateEncounter</span><span class="state-purpose">From <code>encounterService.ts</code> — PUT /api/v1/clinician/encounters/{id} — used for saving vitals, SOAP, diagnoses</span></div>
+  <div class="state-row"><span class="state-name">getPatientById</span><span class="state-purpose">From <code>patientService.ts</code> — GET /api/v1/patients/{id} — fetches patient demographics</span></div>
+  <div class="state-row"><span class="state-name">getAllPrescriptions</span><span class="state-purpose">From <code>prescriptionService.ts</code> — GET /api/v1/prescriptions — then filtered client-side by encounterId</span></div>
+  <div class="state-row"><span class="state-name">deletePrescription</span><span class="state-purpose">From <code>prescriptionService.ts</code> — DELETE /api/v1/prescriptions/{rxId}</span></div>
+  <div class="state-row"><span class="state-name">getAllOrders</span><span class="state-purpose">From <code>labService.ts</code> — GET /api/v1/lab/orders — then filtered by encounterId</span></div>
+  <div class="state-row"><span class="state-name">cancelLabOrder</span><span class="state-purpose">From <code>labService.ts</code> — DELETE /api/v1/lab/orders/{id}</span></div>
+</div>
+
+<div class="group-label">TypeScript types (from models/types.ts)</div>
+<div class="card">
+  <div class="state-row"><span class="state-name">EncounterResponseDto</span><span class="state-purpose">Shape of the encounter object returned from backend</span></div>
+  <div class="state-row"><span class="state-name">PatientResponseDto</span><span class="state-purpose">Shape of patient demographics</span></div>
+  <div class="state-row"><span class="state-name">PrescriptionResponseDto</span><span class="state-purpose">Shape of each prescription in the list</span></div>
+  <div class="state-row"><span class="state-name">LabOrderResponseDto</span><span class="state-purpose">Shape of each lab order</span></div>
+</div>
+
+<div class="group-label">UI components & icons</div>
+<div class="card">
+  <p><code>LabOrdersTable</code> — reusable component that renders the lab orders list in the Orders tab.</p>
+  <p><code>Modal</code> — generic modal component from <code>components/ui/components.tsx</code> — used for all confirmation dialogs.</p>
+  <p><code>lucide-react</code> — pure icon library. ArrowLeft, CheckCircle, Trash2, Edit, Heart, etc. Just renders SVG icons.</p>
+  <p><code>react-hot-toast</code> — shows toast notifications (green success / red error banners at top/bottom).</p>
+</div>
+
+<div class="group-label">Validation utilities</div>
+<div class="card">
+  <div class="state-row"><span class="state-name">validateVitals</span><span class="state-purpose">From <code>utils/validation.ts</code> — checks each vital field for valid ranges</span></div>
+  <div class="state-row"><span class="state-name">validateSoapNote</span><span class="state-purpose">From <code>utils/validation.ts</code> — checks SOAP text is at least 10 chars</span></div>
+  <div class="state-row"><span class="state-name">validateForSigning</span><span class="state-purpose">From <code>utils/validation.ts</code> — pre-sign checklist (BP, temp, pulse, SOAP, diagnosis)</span></div>
+  <div class="state-row"><span class="state-name">VitalsErrors, VitalsWarnings</span><span class="state-purpose">TypeScript interfaces for the error/warning objects returned by validateVitals</span></div>
+</div>
+
+<div class="group-label">ICD-10 diagnosis tools</div>
+<div class="card">
+  <div class="state-row"><span class="state-name">ICD10_CODES</span><span class="state-purpose">From <code>utils/icd10Codes.ts</code> — array of 40 ICD-10 codes with descriptions. Used for autocomplete search.</span></div>
+  <div class="state-row"><span class="state-name">validateDiagnosisInput</span><span class="state-purpose">From <code>utils/icd10Codes.ts</code> — regex check that input matches ICD-10 format like J06.9</span></div>
+</div>
+</div>
+
+<!-- SECTION 2: STATES -->
+<div id="states" class="section">
+<h2>Section 2 — Every state variable, what it holds, why it exists</h2>
+
+<div class="group-label">Data states — server data stored here</div>
+<div class="state-row"><span class="state-name">encounter</span><span class="tag tag-blue">EncounterResponseDto | null</span><span class="state-purpose">The main encounter object from backend. Null until loaded. Drives most of the page.</span></div>
+<div class="state-row"><span class="state-name">patient</span><span class="tag tag-blue">PatientResponseDto | null</span><span class="state-purpose">Patient demographics (name, MRN, DOB, gender, insurance). Fetched separately.</span></div>
+<div class="state-row"><span class="state-name">prescriptions</span><span class="tag tag-blue">PrescriptionResponseDto[]</span><span class="state-purpose">All prescriptions for this encounter. Fetched from server, filtered by encounterId.</span></div>
+<div class="state-row"><span class="state-name">realLabOrders</span><span class="tag tag-blue">LabOrderResponseDto[]</span><span class="state-purpose">All lab orders for this encounter. Same pattern — fetched all, filtered by encounterId.</span></div>
+
+<div class="group-label" style="margin-top:16px">Loading states — control UI spinners</div>
+<div class="state-row"><span class="state-name">loading</span><span class="tag tag-amber">boolean</span><span class="state-purpose">True while the initial page load API calls run. Shows a full-page spinner.</span></div>
+<div class="state-row"><span class="state-name">actionLoading</span><span class="tag tag-amber">boolean</span><span class="state-purpose">True while any button action (save, sign, delete) is in flight. Disables buttons to prevent double-clicks.</span></div>
+
+<div class="group-label" style="margin-top:16px">Navigation state</div>
+<div class="state-row"><span class="state-name">activeTab</span><span class="tag tag-gray">TabType</span><span class="state-purpose">Which tab is selected: 'Overview' | 'SOAP Notes' | 'Diagnosis' | 'Orders' | 'Prescriptions' | 'Timeline'. Defaults to 'Overview'.</span></div>
+
+<div class="group-label" style="margin-top:16px">Vitals input states — 8 separate strings, one per field</div>
+<div class="card">
+  <p>Each vital has its own state because each input is independently controlled. They start empty, get populated by <code>loadEncounterDetails()</code> from <code>vitalsJson</code>, and can be edited by the user before Save.</p>
+  <div class="state-row"><span class="state-name">vitalsTemp</span><span class="state-type">string</span><span class="state-purpose">Temperature in °C</span></div>
+  <div class="state-row"><span class="state-name">vitalsPulse</span><span class="state-type">string</span><span class="state-purpose">Heart rate in bpm</span></div>
+  <div class="state-row"><span class="state-name">vitalsSpo2</span><span class="state-type">string</span><span class="state-purpose">Oxygen saturation %</span></div>
+  <div class="state-row"><span class="state-name">vitalsRr</span><span class="state-type">string</span><span class="state-purpose">Respiratory rate /min</span></div>
+  <div class="state-row"><span class="state-name">vitalsWeight</span><span class="state-type">string</span><span class="state-purpose">Weight in kg</span></div>
+  <div class="state-row"><span class="state-name">vitalsHeight</span><span class="state-type">string</span><span class="state-purpose">Height in cm</span></div>
+  <div class="state-row"><span class="state-name">vitalsBpSystolic</span><span class="state-type">string</span><span class="state-purpose">Systolic BP (upper number)</span></div>
+  <div class="state-row"><span class="state-name">vitalsBpDiastolic</span><span class="state-type">string</span><span class="state-purpose">Diastolic BP (lower number)</span></div>
+</div>
+
+<div class="group-label">SOAP states</div>
+<div class="state-row"><span class="state-name">editingSoap</span><span class="tag tag-gray">'subjective' | 'objective' | 'assessment' | 'plan' | null</span><span class="state-purpose">Which SOAP field is in edit mode right now. Only one can be edited at a time.</span></div>
+<div class="state-row"><span class="state-name">soapSubjective</span><span class="state-type">string</span><span class="state-purpose">Patient-reported symptoms text</span></div>
+<div class="state-row"><span class="state-name">soapObjective</span><span class="state-type">string</span><span class="state-purpose">Clinician exam findings text</span></div>
+<div class="state-row"><span class="state-name">soapAssessment</span><span class="state-type">string</span><span class="state-purpose">Clinical impression / diagnosis text</span></div>
+<div class="state-row"><span class="state-name">soapPlan</span><span class="state-type">string</span><span class="state-purpose">Treatment plan text</span></div>
+<div class="state-row"><span class="state-name">soapError</span><span class="state-type">string</span><span class="state-purpose">Validation error shown below the active SOAP textarea</span></div>
+
+<div class="group-label" style="margin-top:16px">Diagnosis states</div>
+<div class="state-row"><span class="state-name">diagnosesList</span><span class="tag tag-blue">string[]</span><span class="state-purpose">The list of diagnoses on this encounter. e.g. ["J06.9 - Acute URI", "R51 - Headache"]</span></div>
+<div class="state-row"><span class="state-name">newDiagnosis</span><span class="state-type">string</span><span class="state-purpose">What the clinician is currently typing into the diagnosis search box</span></div>
+<div class="state-row"><span class="state-name">diagSuggestions</span><span class="tag tag-blue">{code,description}[]</span><span class="state-purpose">Filtered matches from ICD10_CODES shown as dropdown</span></div>
+<div class="state-row"><span class="state-name">showDiagDropdown</span><span class="tag tag-amber">boolean</span><span class="state-purpose">Whether the autocomplete dropdown is visible</span></div>
+<div class="state-row"><span class="state-name">diagError</span><span class="state-type">string</span><span class="state-purpose">Error shown below diagnosis input (invalid format, duplicate)</span></div>
+
+<div class="group-label" style="margin-top:16px">Validation result states</div>
+<div class="state-row"><span class="state-name">vitalsErrors</span><span class="tag tag-red">VitalsErrors</span><span class="state-purpose">Object with field-level error strings. e.g. <code>{temp: "Range: 30–45 °C"}</code>. Turns input border red.</span></div>
+<div class="state-row"><span class="state-name">vitalsWarnings</span><span class="tag tag-amber">VitalsWarnings</span><span class="state-purpose">Object with clinically flagged warnings. e.g. <code>{pulse: "Tachycardia"}</code>. Turns input border amber.</span></div>
+
+<div class="group-label" style="margin-top:16px">Modal control states — each modal has its own boolean</div>
+<div class="card">
+<div class="state-row"><span class="state-name">showSignModal</span><span class="state-type">boolean</span><span class="state-purpose">Opens the Sign/Complete confirmation modal (or the "missing fields" warning modal)</span></div>
+<div class="state-row"><span class="state-name">showDeleteModal</span><span class="state-type">boolean</span><span class="state-purpose">Opens the Delete Encounter confirmation</span></div>
+<div class="state-row"><span class="state-name">showDeleteRxModal</span><span class="state-type">boolean</span><span class="state-purpose">Opens the Remove Prescription confirmation</span></div>
+<div class="state-row"><span class="state-name">pendingDeleteRxId</span><span class="state-type">number | null</span><span class="state-purpose">Stores which rxId is about to be deleted — passed from row button into the modal confirm handler</span></div>
+<div class="state-row"><span class="state-name">showCancelLabModal</span><span class="state-type">boolean</span><span class="state-purpose">Opens the Cancel Lab Order confirmation</span></div>
+<div class="state-row"><span class="state-name">pendingCancelLabId</span><span class="state-type">number | null</span><span class="state-purpose">Stores which lab order id is about to be cancelled</span></div>
+<div class="state-row"><span class="state-name">signMissing</span><span class="tag tag-red">string[]</span><span class="state-purpose">List of items missing before signing. e.g. ["Blood Pressure", "SOAP Assessment"]. If empty, shows confirm modal. If not, shows warning list.</span></div>
+</div>
+</div>
+
+<!-- SECTION 3: USEEFFECT -->
+<div id="useeffect" class="section">
+<h2>Section 3 — useEffect and data loading</h2>
+
+<div class="flow-box blue"><strong>useEffect(() => { loadEncounterDetails() }, [id])</strong><br>
+Runs once on mount. If the user navigates from encounter #5 to encounter #6 without unmounting, the <code>id</code> dependency triggers it again.</div>
+
+<h3>Inside loadEncounterDetails()</h3>
+<p>This is an <code>async</code> function — it runs 4 separate API calls in sequence:</p>
+
+<div class="flow-box blue">Step 1 — <code>setLoading(true)</code> → shows full-page spinner</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">Step 2 — <code>getEncounterById(Number(id))</code><br>
+Calls GET /api/v1/clinician/encounters/{id} → returns <code>EncounterResponseDto</code><br>
+Result stored in <code>setEncounter(encData)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">Step 3 — <code>getPatientById(encData.patientId)</code><br>
+Uses patientId from the encounter to fetch demographics<br>
+Calls GET /api/v1/patients/{id} → stores in <code>setPatient(patData)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">Step 4 — Parse JSON fields from the encounter<br>
+<code>safeParse(encData.vitalsJson)</code> → sets all 8 vitals states<br>
+<code>safeParse(encData.notesJson)</code> → sets soapSubjective/Objective/Assessment/Plan<br>
+<code>safeParse(encData.diagnosesJson)</code> → sets diagnosesList<br>
+(vitals/notes/diagnoses are stored as JSON strings in DB, parsed here into JS objects)</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">Step 5 — <code>getAllOrders()</code> → GET /api/v1/lab/orders<br>
+Returns ALL lab orders, then filters: <code>.filter(o => o.encounterId === Number(id))</code><br>
+Stores result in <code>setRealLabOrders(...)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box green">Step 6 — <code>getAllPrescriptions()</code> → GET /api/v1/prescriptions<br>
+Returns ALL prescriptions, then filters: <code>.filter(rx => rx.encounterId === Number(id))</code><br>
+Stores in <code>setPrescriptions(...)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box gray">finally: <code>setLoading(false)</code> → hides spinner, page renders</div>
+
+<h3>safeParse — the helper used here</h3>
+<p>The backend stores vitals, SOAP, and diagnoses as JSON strings inside a single text column. <code>safeParse(jsonString)</code> calls <code>JSON.parse()</code> inside a try-catch. If the string is malformed or null, it returns <code>null</code> instead of crashing.</p>
+
+<h3>buildPayload — the other key helper</h3>
+<p>Every save operation (vitals, SOAP, diagnosis) calls <code>buildPayload(overrides)</code>. This constructs the full <code>EncounterRequestDto</code> that the PUT endpoint expects — copying all existing fields from the current <code>encounter</code> state, but replacing only the specific field being updated. This way, saving vitals doesn't accidentally wipe out SOAP notes.</p>
+</div>
+
+<!-- SECTION 4: HELPERS -->
+<div id="helpers" class="section">
+<h2>Section 4 — Pure helper functions (no API, no state)</h2>
+
+<div class="card">
+<div class="card-title">getAge(dobString)</div>
+<p>Takes the patient's date of birth string like <code>"1992-06-15"</code>, computes the difference from today in milliseconds, converts to years. Returns e.g. <code>"33y"</code>. Shown in the demographics banner.</p>
+</div>
+
+<div class="card">
+<div class="card-title">formatDateTime(dateStr)</div>
+<p>Converts an ISO datetime string to Indian locale format: <code>"21 Jun 2026, 10:30 AM"</code>. Uses <code>new Date(dateStr).toLocaleString('en-IN', {...})</code>. Used for startAt, endAt, signedAt, appointment time.</p>
+</div>
+
+<div class="card">
+<div class="card-title">getStatusBadge(status)</div>
+<p>Takes <code>"IN_PROGRESS"</code> / <code>"COMPLETED"</code> / <code>"CANCELLED"</code>, returns a JSX <code>&lt;span&gt;</code> badge with the right CSS class and label. Shown in the page header next to encounter ID.</p>
+</div>
+
+<div class="card">
+<div class="card-title">handleDiagnosisSearch(val) — the autocomplete engine</div>
+<p>Called on every keystroke in the diagnosis input. It sets <code>newDiagnosis</code> to the typed text, then searches <code>ICD10_CODES</code> (the array imported from icd10Codes.ts) by comparing <code>val.toLowerCase()</code> against each code and description. Shows the top 8 matches in <code>diagSuggestions</code> and sets <code>showDiagDropdown = true</code>. No API call — purely client-side search.</p>
+</div>
+
+<div class="card">
+<div class="card-title">selectDiagnosis(item)</div>
+<p>Called when the user clicks a suggestion. Sets <code>newDiagnosis</code> to <code>"J06.9 - Acute upper respiratory infection"</code>, hides the dropdown, clears any error. No API call — just state updates.</p>
+</div>
+</div>
+
+<!-- SECTION 5: BUTTON FLOWS -->
+<div id="buttons" class="section">
+<h2>Section 5 — Button click → service call flows</h2>
+<p>For each button, here is the exact sequence of what happens from click to server and back.</p>
+
+<h3>💾 Save Vitals button (Overview tab)</h3>
+<div class="flow-box blue">You click "Save Vitals"<br>→ calls <code>handleSaveVitals()</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">1. Calls <code>validateVitals({temp, pulse, spo2, rr, weight, height, bpSystolic, bpDiastolic})</code> from <code>validation.ts</code><br>
+Returns <code>{errors, warnings, isValid}</code><br>
+Sets <code>vitalsErrors</code> state (turns inputs red) and <code>vitalsWarnings</code> state (turns inputs amber)<br>
+If <code>!isValid</code> → toast error, STOP here</div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">2. If warnings exist → toast "X vital(s) flagged as abnormal" but continues</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">3. <code>setActionLoading(true)</code> — disables the button</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">4. Builds <code>updatedVitalsJson</code> — combines all 8 vitals into one JSON string<br>
+e.g. <code>{"bp":"120/80","bpSystolic":"120","bpDiastolic":"80","temp":"37.0",...}</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box green">5. <code>buildPayload({vitalsJson: updatedVitalsJson})</code><br>
+Merges with existing encounter data (keeps SOAP/diagnoses unchanged)</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">6. <code>updateEncounter(encounter.encounterId, payload)</code><br>
+→ <code>encounterService.ts</code>: PUT /api/v1/clinician/encounters/{id}<br>
+→ Backend saves, returns updated EncounterResponseDto</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">7. <code>setEncounter(updated)</code> — syncs local state with DB<br>
+toast.success("Patient vitals saved successfully!")<br>
+<code>setActionLoading(false)</code></div>
+
+<h3 style="margin-top:20px">📝 Save SOAP Note (each field's Save button)</h3>
+<div class="flow-box blue">You click "Edit" on Subjective → <code>setEditingSoap('subjective')</code> — shows textarea<br>
+You type. You click "Save"<br>→ calls <code>handleSaveSoapNote('subjective')</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">1. <code>validateSoapNote(soapSubjective, 'Subjective')</code> from <code>validation.ts</code><br>
+Checks: if text is not empty, must be ≥ 10 chars<br>
+If invalid → <code>setSoapError(msg)</code>, toast error, STOP</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">2. Builds <code>updatedNotes = {subjective, objective, assessment, plan}</code> (all 4 fields)<br>
+<code>buildPayload({notesJson: JSON.stringify(updatedNotes)})</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box green">3. <code>updateEncounter(id, payload)</code><br>
+→ PUT /api/v1/clinician/encounters/{id}</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">4. <code>setEncounter(updated)</code>, <code>setEditingSoap(null)</code> — closes textarea<br>
+toast.success("SOAP SUBJECTIVE note saved!")</div>
+
+<h3 style="margin-top:20px">🔍 Add Diagnosis button</h3>
+<div class="flow-box blue">User types in diagnosis box → <code>handleDiagnosisSearch()</code> runs on each keystroke<br>
+→ Filters ICD10_CODES array → shows dropdown<br>
+User clicks a suggestion → <code>selectDiagnosis(item)</code> fills the input<br>
+User clicks "Add Diagnosis"<br>→ <code>handleAddDiagnosis()</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">1. <code>validateDiagnosisInput(newDiagnosis)</code> from <code>icd10Codes.ts</code><br>
+Checks regex: must match pattern like J06.9 or be in "CODE - Description" format<br>
+If invalid → <code>setDiagError('Invalid format...')</code>, STOP<br>
+If duplicate → <code>setDiagError('Already added')</code>, STOP</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">2. <code>updatedList = [...diagnosesList, newDiagnosis.trim()]</code><br>
+<code>buildPayload({diagnosesJson: JSON.stringify(updatedList)})</code><br>
+<code>updateEncounter(id, payload)</code> → PUT /api/v1/clinician/encounters/{id}</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">3. <code>setEncounter(updated)</code>, <code>setDiagnosesList(updatedList)</code><br>
+<code>setNewDiagnosis('')</code> — clears input, toast.success("Diagnosis added.")</div>
+
+<h3 style="margin-top:20px">✅ Sign Encounter button</h3>
+<div class="flow-box blue">You click "Sign Encounter" → <code>handleComplete()</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box amber">1. <code>validateForSigning({bpSystolic, bpDiastolic, temp, pulse, subjective, assessment, diagnosesCount})</code><br>
+from <code>validation.ts</code><br>
+Checks 6 required fields. Returns <code>{canSign: bool, missing: string[]}</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box red">If <code>!check.canSign</code>:<br>
+<code>setSignMissing(check.missing)</code> → populates the "missing items" list<br>
+<code>setShowSignModal(true)</code> → opens modal showing the missing fields list<br>
+STOP — does not call API yet</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">If all fields are present:<br>
+<code>setSignMissing([])</code>, <code>setShowSignModal(true)</code><br>
+Opens modal with confirmation message (not missing-fields list)</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">User reads modal, clicks "Confirm & Sign" → <code>confirmSign()</code><br>
+<code>setShowSignModal(false)</code>, <code>setActionLoading(true)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box green"><code>completeEncounter(encounter.encounterId)</code><br>
+→ <code>encounterService.ts</code>: PATCH /api/v1/clinician/encounters/status/{id}<br>
+Backend atomically: sets status=COMPLETED, sets signedBy, signedAt, issues DRAFT prescriptions, completes linked appointment</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue"><code>setEncounter(updated)</code> — status changes to COMPLETED<br>
+All IN_PROGRESS-only buttons disappear from UI<br>
+toast.success("Encounter signed and completed!")</div>
+
+<h3 style="margin-top:20px">🗑️ Delete Encounter button</h3>
+<div class="flow-box blue">Click "Delete" → <code>handleDelete()</code> → <code>setShowDeleteModal(true)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">User confirms in modal → <code>confirmDelete()</code><br>
+<code>setShowDeleteModal(false)</code>, <code>setActionLoading(true)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box red"><code>deleteEncounter(encounter.encounterId)</code><br>
+→ <code>encounterService.ts</code>: DELETE /api/v1/clinician/encounters/{id}<br>
+Returns void (no body)</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">toast.success, <code>navigate('/encounters', {replace: true})</code> — back to list</div>
+
+<h3 style="margin-top:20px">🗑️ Delete Prescription (row trash icon)</h3>
+<div class="flow-box blue">Click trash icon on a prescription row<br>→ <code>setPendingDeleteRxId(rx.rxId)</code>, <code>setShowDeleteRxModal(true)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">User confirms → <code>confirmDeleteRx()</code><br><code>setShowDeleteRxModal(false)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box red"><code>deletePrescription(pendingDeleteRxId)</code><br>
+→ <code>prescriptionService.ts</code>: DELETE /api/v1/prescriptions/{rxId}</div>
+<div class="arrow">↓</div>
+<div class="flow-box blue"><code>setPrescriptions(prev => prev.filter(p => p.rxId !== pendingDeleteRxId))</code><br>
+Removes from local state — no re-fetch needed<br>
+toast.success("Prescription removed.")</div>
+
+<h3 style="margin-top:20px">🧪 Cancel Lab Order (in LabOrdersTable)</h3>
+<div class="flow-box blue">Click cancel on a lab order row → <code>handleCancelLabOrder(orderId)</code><br>
+<code>setPendingCancelLabId(orderId)</code>, <code>setShowCancelLabModal(true)</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box blue">User confirms → <code>confirmCancelLabOrder()</code></div>
+<div class="arrow">↓</div>
+<div class="flow-box red"><code>cancelLabOrder(pendingCancelLabId)</code><br>
+→ <code>labService.ts</code>: DELETE /api/v1/lab/orders/{id}</div>
+<div class="arrow">↓</div>
+<div class="flow-box green">Re-fetches lab orders: <code>getAllOrders()</code> → filters by encounterId<br>
+Updates <code>realLabOrders</code> — shows cancelled status or removes row</div>
+</div>
+
+<!-- SECTION 6: TABS & JSX -->
+<div id="tabs" class="section">
+<h2>Section 6 — Tabs and JSX render structure</h2>
+
+<p>The JSX is one big <code>return (&lt;div&gt;...&lt;/div&gt;)</code>. It renders these sections top to bottom, always:</p>
+
+<div class="flow-box blue">1. Page header — Encounter # + status badge + started time</div>
+<div class="flow-box amber">2. Action buttons row — Edit, Add Prescription, Order Lab, Save Draft, Sign, Delete<br>
+Only shown if <code>user?.role === 'CLINICIAN'</code> AND <code>encounter.status === 'IN_PROGRESS'</code></div>
+<div class="flow-box green">3. Demographics banner — patient avatar, name, MRN, age/gender, physician, insurance, allergies<br>
+Clicking avatar or "Patient Profile" → <code>navigate('/patients')</code></div>
+<div class="flow-box blue">4. Tab bar — 6 tabs, each sets <code>activeTab</code> on click via <code>setActiveTab(tab)</code></div>
+<div class="flow-box blue">5. Tab content — controlled by <code>activeTab</code> state<br>
+Each tab is wrapped in <code>{activeTab === 'X' && (&lt;div&gt;...&lt;/div&gt;)}</code></div>
+
+<h3>Overview tab content</h3>
+<p>Chief Complaint card → displays <code>encounter.chiefComplaint</code> text</p>
+<p>Vitals card → shows 7 visual stat boxes (read-only display), then if status is IN_PROGRESS, shows 8 editable inputs + "Save Vitals" button</p>
+<p>Encounter Info card → metadata grid: ID, Status, Created By, Signed By, Started At, Ended At</p>
+
+<h3>SOAP Notes tab</h3>
+<p>Renders 4 cards (S, O, A, P) in a loop. Each shows the text. If clinician + IN_PROGRESS, shows Edit button. Clicking Edit sets <code>editingSoap</code> to that key — swaps text display for a textarea + Save/Cancel buttons.</p>
+
+<h3>Diagnosis tab</h3>
+<p>If clinician + IN_PROGRESS: shows search input + autocomplete dropdown + Add button. Always shows the <code>diagnosesList</code> — each entry as a row with ICD code badge + description + optional remove button.</p>
+
+<h3>Orders tab</h3>
+<p>If <code>realLabOrders.length === 0</code>: shows empty state with "Create Lab Order" button (navigates to /lab/new with encounterId in router state). Otherwise renders <code>&lt;LabOrdersTable&gt;</code> passing orders, context="encounter", onCancelOrder callback, actionLoading.</p>
+
+<h3>Prescriptions tab</h3>
+<p>If <code>prescriptions.length === 0</code>: empty state with "Create Prescription" button (navigates to /prescriptions/new). Otherwise a table: medication name, dosage, frequency, duration, and if IN_PROGRESS+CLINICIAN, Edit and Delete icons per row.</p>
+
+<h3>Timeline tab</h3>
+<p>Static display. Builds an array of timeline events from current state — "Encounter Started" (always shows), "Vitals Logged" (if vitals exist), "SOAP Notes Drafted" (if soap exists), "Encounter Signed" (if status=COMPLETED). Filters with <code>.filter(e => e.show)</code> then maps to timeline dot rows.</p>
+
+<h3>Early returns before the JSX</h3>
+<div class="card">
+<p>If <code>loading === true</code>: returns a full-page spinner div immediately — nothing else renders.</p>
+<p>If <code>!encounter</code> (load failed): returns "Encounter not found" + back button.</p>
+<p>Only if <code>loading === false</code> AND <code>encounter !== null</code> does the full page render.</p>
+</div>
+</div>
+
+<!-- SECTION 7: MODALS -->
+<div id="modals" class="section">
+<h2>Section 7 — The 4 Confirmation Modals</h2>
+<p>All 4 modals use the same <code>&lt;Modal&gt;</code> component from <code>components/ui/components.tsx</code>. The component takes <code>isOpen</code>, <code>onClose</code>, <code>title</code>, and <code>children</code>. The children are the modal body — buttons + message.</p>
+
+<div class="card">
+<div class="card-title">Sign Encounter Modal (showSignModal)</div>
+<p>Has two modes depending on <code>signMissing.length</code>:<br>
+If missing items exist → shows red warning list of missing fields, only a Close button (cannot sign yet).<br>
+If signMissing is empty → shows green confirmation message, "Confirm & Sign" button calls <code>confirmSign()</code> → PATCH API.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Delete Encounter Modal (showDeleteModal)</div>
+<p>Shows encounter ID and patient name. "Delete" button calls <code>confirmDelete()</code> → DELETE API → navigate away.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Remove Prescription Modal (showDeleteRxModal)</div>
+<p>Simple confirmation. "Remove" calls <code>confirmDeleteRx()</code> which uses <code>pendingDeleteRxId</code> — the rxId saved when you clicked the trash icon on the row.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Cancel Lab Order Modal (showCancelLabModal)</div>
+<p>"Cancel Order" calls <code>confirmCancelLabOrder()</code> which uses <code>pendingCancelLabId</code>. After cancel, re-fetches all orders to update the table.</p>
+</div>
+</div>
+
+<!-- SECTION 8: HOW FILES ARE USED -->
+<div id="files" class="section">
+<h2>Section 8 — Exactly where and how each file is used</h2>
+
+<h3>models/types.ts — TypeScript contract layer</h3>
+<div class="card">
+<p><code>EncounterResponseDto</code> — type annotation for the <code>encounter</code> state. Every field access like <code>encounter.patientId</code>, <code>encounter.vitalsJson</code>, <code>encounter.status</code> is TypeScript-safe because this interface defines them. If the backend changes a field name, TypeScript will flag the mismatch at compile time.</p>
+<p><code>PatientResponseDto</code> — same pattern for <code>patient</code> state. Used for <code>patient?.name</code>, <code>patient?.mrn</code>, <code>patient?.dob</code> in the demographics banner.</p>
+<p><code>PrescriptionResponseDto</code> — the type for each item in the <code>prescriptions</code> array. <code>rx.medicationName</code>, <code>rx.dosage</code>, <code>rx.rxId</code> all come from this type.</p>
+<p><code>LabOrderResponseDto</code> — type for each item in <code>realLabOrders</code>. Also passed to <code>&lt;LabOrdersTable orders={realLabOrders}&gt;</code>.</p>
+<p><code>TabType</code> and <code>TAB_ICONS</code> — defined locally in the file, not from types.ts — but follow the same pattern.</p>
+</div>
+
+<h3>encounterService.ts — the encounter API module</h3>
+<div class="card">
+<p>Uses raw <code>fetch()</code> (not Axios). Defines its own <code>getAuthHeaders()</code> function that reads the token from localStorage and returns the Authorization header.</p>
+<p><code>getEncounterById(id)</code> — called once in <code>loadEncounterDetails()</code> on page load.</p>
+<p><code>updateEncounter(id, payload)</code> — called 4 times: save vitals, save any SOAP field, add diagnosis, remove diagnosis. It's the workhorse of this page.</p>
+<p><code>completeEncounter(id)</code> — called in <code>confirmSign()</code>. Uses PATCH not PUT.</p>
+<p><code>deleteEncounter(id)</code> — called in <code>confirmDelete()</code>. Returns void.</p>
+</div>
+
+<h3>patientService.ts — uses Axios via the shared api.ts instance</h3>
+<div class="card">
+<p><code>getPatientById(id)</code> — called once in <code>loadEncounterDetails()</code> right after the encounter loads, using <code>encData.patientId</code>. The patient data populates the demographics banner (name, MRN, age, gender, insurance).</p>
+<p>Note the architectural difference: <code>patientService</code> uses <code>api.get()</code> from the Axios instance (which has the interceptor auto-adding the token), while <code>encounterService</code> uses raw <code>fetch()</code> with a manually built header. Both work but are inconsistent — a real code review note.</p>
+</div>
+
+<h3>prescriptionService.ts — uses raw fetch like encounterService</h3>
+<div class="card">
+<p><code>getAllPrescriptions()</code> — called in <code>loadEncounterDetails()</code>. Returns ALL prescriptions from the system, then the component filters them: <code>.filter(rx => rx.encounterId === Number(id))</code>. This is client-side filtering — not ideal at scale but fine for this project.</p>
+<p><code>deletePrescription(rxId)</code> — called in <code>confirmDeleteRx()</code>. After delete, the state is updated optimistically: the deleted rx is filtered out of <code>prescriptions</code> without re-fetching from server.</p>
+</div>
+
+<h3>labService.ts — uses Axios via api.ts</h3>
+<div class="card">
+<p><code>getAllOrders()</code> — called in <code>loadEncounterDetails()</code> AND again after <code>confirmCancelLabOrder()</code> to refresh the list. Same client-side filter pattern as prescriptions.</p>
+<p><code>cancelLabOrder(id)</code> — called in <code>confirmCancelLabOrder()</code>. After cancellation, a fresh <code>getAllOrders()</code> call re-fetches to show the updated status. Different pattern from prescriptions (which uses local state filter) — here a full re-fetch is done.</p>
+</div>
+
+<h3>utils/validation.ts</h3>
+<div class="card">
+<p><code>validateVitals()</code> — called inside <code>handleSaveVitals()</code>. Takes an object with 8 string fields. Internally converts each to a number, checks physiological ranges (e.g. temp 30–45°C), checks cross-field logic (diastolic < systolic). Returns <code>{errors, warnings, isValid}</code>. The errors object is stored in <code>vitalsErrors</code> state and used inline in the JSX to turn input borders red.</p>
+<p><code>validateSoapNote(text, field)</code> — called in <code>handleSaveSoapNote(field)</code>. Only check: if text is non-empty, must be ≥ 10 chars. Empty is allowed (clinician may not have filled every section).</p>
+<p><code>validateForSigning()</code> — called in <code>handleComplete()</code> before opening the sign modal. Checks 6 things: BP systolic, BP diastolic, temp, pulse, subjective text, assessment text, and at least 1 diagnosis. Returns a list of any missing items. If the list is non-empty, the modal shows the warning instead of the confirmation.</p>
+</div>
+
+<h3>utils/icd10Codes.ts</h3>
+<div class="card">
+<p><code>ICD10_CODES</code> — an array of 40 objects, each with <code>code</code> and <code>description</code>. Used in <code>handleDiagnosisSearch()</code>: the component filters this static array locally on every keystroke. No API call — instant, zero latency autocomplete.</p>
+<p><code>validateDiagnosisInput(value)</code> — uses <code>ICD10_REGEX = /^[A-Z]\d{2}(\.\w{1,4})?$/i</code>. If input is "J06.9 - Acute URI", it splits on " - " and tests the first part "J06.9" against the regex. If it's just a code like "R51", it tests the whole string. Returns true/false. Called in <code>handleAddDiagnosis()</code> before the API call.</p>
+</div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  event.target.classList.add('active');
+}
+</script>
